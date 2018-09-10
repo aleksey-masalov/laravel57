@@ -67,7 +67,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => App\Models\User::class,
         ],
 
         // 'users' => [
@@ -99,4 +99,6 @@ return [
         ],
     ],
 
+    'registration_enabled' => env('REGISTRATION_ENABLED', true),
+    'confirm_account_enabled' => env('CONFIRM_ACCOUNT_ENABLED', false),
 ];

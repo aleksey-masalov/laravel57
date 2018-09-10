@@ -11,6 +11,17 @@ if (!function_exists('homeRoute')) {
     }
 }
 
+if (!function_exists('generateConfirmationToken')) {
+
+    /**
+     * @return string
+     */
+    function generateConfirmationToken()
+    {
+        return bin2hex(random_bytes(32));
+    }
+}
+
 if (!function_exists('includeRouteFiles')) {
 
     /**
