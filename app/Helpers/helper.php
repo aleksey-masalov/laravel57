@@ -11,6 +11,17 @@ if (!function_exists('homeRoute')) {
     }
 }
 
+if (! function_exists('userName')) {
+
+    /**
+     * @return string
+     */
+    function userName()
+    {
+        return auth()->check() ? auth()->user()->name : 'Guest';
+    }
+}
+
 if (!function_exists('generateConfirmationToken')) {
 
     /**
@@ -41,5 +52,17 @@ if (!function_exists('includeRouteFiles')) {
         } catch (Exception $e) {
             echo $e->getMessage();
         }
+    }
+}
+
+if (!function_exists('isActiveRoute')) {
+
+    /**
+     * @param string $routeName
+     * @return string
+     */
+    function isActiveRoute($routeName)
+    {
+        return app('request')->is(substr(route($routeName, [], false), 1) . '*');
     }
 }
