@@ -2,19 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use App\Models\Traits\User\UserAttribute;
+use App\Models\Traits\User\UserRelationship;
 
 class User extends Authenticatable
 {
     use Notifiable;
     use SoftDeletes;
+    use UserAttribute;
+    use UserRelationship;
 
     /**
      * @var array
      */
-    protected $fillable = ['name', 'email', 'password'];
+    protected $fillable = ['name', 'email', 'password', 'is_active', 'is_confirmed'];
 
     /**
      * @var array
@@ -45,6 +49,54 @@ class User extends Authenticatable
     public function hasConfirmedAccount()
     {
         return $this->is_confirmed == 1;
+    }
+
+    /**
+     * @param string $role
+     * @return bool
+     */
+    public function hasRole($role)
+    {
+        return !is_null($this->roles()->where('key', $role)->first());
+    }
+
+    /**
+     * @param string $permission
+     * @return boolean
+     */
+    public function hasPermission($permission)
+    {
+        foreach ($this->roles as $role) {
+            if ($role->permissions()->where('key', $permission)->first()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuperAdmin()
+    {
+        return $this->hasRole(Role::ROLE_SUPER_ADMIN);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCurrentUser()
+    {
+        return auth()->check() && auth()->id() === $this->id;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCurrentSuperAdmin()
+    {
+        return $this->isCurrentUser() && $this->isSuperAdmin();
     }
 
     /**
